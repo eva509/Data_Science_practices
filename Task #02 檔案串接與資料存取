@@ -1,0 +1,12 @@
+import pandas as pd
+
+# 存取來自於檔案來源的資料
+df = pd.read_csv('https://data.nhi.gov.tw/resource/Nhi_Fst/Fstdata.csv')
+
+# 計算每個縣市的剩餘快篩總數
+city = df['醫事機構地址'].str.slice(0,3)
+num = df.groupby(city)['快篩試劑截至目前結餘存貨數量'].sum()
+
+# 並排序剩餘數量前五高的資料
+top_five = num.sort_values(ascending=False).head()
+print(top_five)
