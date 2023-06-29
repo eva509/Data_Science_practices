@@ -1,0 +1,52 @@
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+
+def getData(url):
+
+    # 發出GET請求，取得網頁資料
+    r = requests.get(url)
+
+    # 使用BeautifulSoup解析
+    d = BeautifulSoup(r.text,'html5lib')
+
+    # 電影資料
+    movies = d.find_all('div',class_='release_info_text')
+    movie_info = []
+
+    for m in movies:
+
+        # 中文
+        name = m.find('a',class_='gabtn').getText(strip=True)
+        # 英文
+        en = m.find('div',class_='en').getText(strip=True)
+        # 上映日期
+        time = m.find('div',class_='release_movie_time').getText(strip=True).replace('上映日期：','')
+        # 期待度
+        expect = m.find('div',class_='leveltext').getText(strip=True).replace('網友想看','')
+
+        movie_info.append({'電影名稱(中文)':name,'電影名稱(英文)':en,'上映日期':time,'期待度':expect})
+
+    return movie_info
+
+
+# 本週新片
+movie_thisweek = getData('https://movies.yahoo.com.tw/movie_thisweek.html?page=1')
+movie_thisweek.extend(getData('https://movies.yahoo.com.tw/movie_thisweek.html?page=2'))
+movie_thisweek.extend(getData('https://movies.yahoo.com.tw/movie_thisweek.html?page=3'))
+df1 = pd.DataFrame(movie_thisweek)
+print('本週新片',df1,'\n')
+
+# 上映中
+movie_intheaters = getData('https://movies.yahoo.com.tw/movie_intheaters.html?page=1')
+movie_intheaters.extend(getData('https://movies.yahoo.com.tw/movie_intheaters.html?page=2'))
+movie_intheaters.extend(getData('https://movies.yahoo.com.tw/movie_intheaters.html?page=3'))
+df2 = pd.DataFrame(movie_intheaters)
+print('上映中',df2,'\n')
+
+# 即將上映
+movie_comingsoon = getData('https://movies.yahoo.com.tw/movie_comingsoon.html?page=1')
+movie_comingsoon.extend(getData('https://movies.yahoo.com.tw/movie_comingsoon.html?page=2'))
+movie_comingsoon.extend(getData('https://movies.yahoo.com.tw/movie_comingsoon.html?page=3'))
+df3 = pd.DataFrame(movie_comingsoon)
+print('即將上映',df3)
