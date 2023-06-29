@@ -1,0 +1,36 @@
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+
+# 發出GET請求，取得網頁資料
+r = requests.get('https://movies.yahoo.com.tw/movie_thisweek.html')
+response = r.text
+# 使用BeautifulSoup解析資料
+d = BeautifulSoup(response,'html5lib')
+
+# 全部
+movies = d.find_all('div',class_='release_info_text')
+movie_info = []
+
+for m in movies:
+    data = []
+    
+    # 中英文名稱 a class="gabtn"
+    name = m.find_all('a',class_='gabtn')
+    for n in name:
+        data.append(n.getText(strip=True))
+    
+    # 上映日期 div class="release_movie_time"
+    time = m.find('div',class_='release_movie_time').getText(strip=True).replace('上映日期：','')
+    data.append(time)
+
+    # 期待度 div class="leveltext"
+    expect = m.find('div',class_='leveltext').getText(strip=True)
+    per_expect = expect.index('%')
+    data.append(expect[:per_expect]+'%')
+
+    movie_info.append(data)
+
+df = pd.DataFrame(movie_info)
+df.columns = ["電影名稱 (中文)", "電影名稱 (英文)", "上映日期", "期待度"]
+print(df)
