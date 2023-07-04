@@ -1,0 +1,35 @@
+import numpy as np
+import pandas as pd
+raw_data = {'first_name': ['Jason', np.nan, 'Tina', 'Jake', 'Amy'], 
+        'last_name': ['Miller', np.nan, 'Ali', 'Milner', 'Cooze'], 
+        'age': [42, np.nan, 36, 24, 73], 
+        'sex': ['m', np.nan, 'f', 'm', 'f'], 
+        'preTestScore': [4, np.nan, np.nan, 2, 3],
+        'postTestScore': [25, np.nan, np.nan, 62, 70]}
+
+df = pd.DataFrame(raw_data, columns = ['first_name', 'last_name', 'age', 'sex', 'preTestScore', 'postTestScore'])
+
+# Drop missing observations
+df.dropna()
+
+# Drop rows where all cells in that row is NA
+df.dropna(how='all')
+
+# Create a new column full of missing values
+df['missing_values'] = np.nan
+
+# Fill in missing data with zeros
+df.fillna(0)
+
+# Fill in missing in preTestScore with the mean value of preTestScore
+df['preTestScore'].fillna(df['preTestScore'].mean(),inplace=True)
+
+# Fill in missing in postTestScore with each sex’s mean value of postTestScore
+# 以sex分組，計算各性別postTestScore的平均值
+mean_postTestScore_by_sex = df.groupby('sex')['postTestScore'].transform('mean')
+# 將postTestScore中missing values依各性別的平均值填充
+df['postTestScore'].fillna(mean_postTestScore_by_sex,inplace=True)
+
+# Select some rows but ignore the missing data points
+# 選擇年紀小於40的raw
+df.query('age<40')
