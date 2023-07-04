@@ -1,0 +1,23 @@
+import pandas as pd
+import numpy as np
+
+url = 'https://raw.githubusercontent.com/selva86/datasets/master/Cars93_miss.csv'
+df = pd.read_csv(url)
+
+# Count the number of missing values in each column and find the maximum number of missing values.
+missing_values = df.isnull().sum()
+maximum = max(missing_values)
+
+# How to replace missing values of `multiple numeric` columns with the mean? 
+# 找出數值型data的columns
+numeric_columns = df.select_dtypes(include=np.number).columns
+# 將numeric_columns中有缺失值的以該columns平均數填充
+df[numeric_columns] = df[numeric_columns].fillna(df[numeric_columns].mean())
+
+
+# Calculate the average price of different manufacturers.
+# 以manufacturers分組後，再計算price平均數
+manufacturers_avg_price = df.groupby('Manufacturer')['Price'].transform('mean')
+
+# How to replace missing values of `price` columns with the mean depending on its manufacturers?
+df['Price'].fillna(manufacturers_avg_price,inplace=True)
