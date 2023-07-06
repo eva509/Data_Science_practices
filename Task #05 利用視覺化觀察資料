@@ -1,0 +1,24 @@
+import pandas as pd
+import numpy as np
+from sklearn.datasets import load_iris
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# 載入iris資料集
+iris = load_iris()
+df = pd.DataFrame(data= np.c_[iris['data'],iris['target']],columns= iris['feature_names']+['target'])
+
+# 利用資料視覺化觀察 sepal 和 petal 四個欄位的關係
+sns.lineplot(data=df[['sepal length (cm)','sepal width (cm)','petal length (cm)',
+        'petal width (cm)']])
+plt.show()
+
+# 利用相關係數觀察 sepal 和 petal 四個欄位的關係
+pearson = df[['sepal length (cm)','sepal width (cm)','petal length (cm)',
+        'petal width (cm)']].corr(method='pearson')
+
+kendall = df[['sepal length (cm)','sepal width (cm)','petal length (cm)',
+        'petal width (cm)']].corr(method ='kendall')
+
+print(pearson)
+print(kendall)
