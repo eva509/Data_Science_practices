@@ -1,0 +1,14 @@
+import numpy as np
+import pandas as pd
+
+# 隨機生成100個介於0~1的數值，並*100呈現
+df = pd.DataFrame(np.random.random(100)*100)
+n = int(input())
+
+# 等寬劃分:區間寬度相同
+df['binned_1'] = pd.cut(df[0],bins=n,labels=False)
+
+# 等頻劃分:區間數量相同
+df['binned_2'] = pd.qcut(df[0],q=n,labels=False)
+
+print(df)
