@@ -1,0 +1,26 @@
+import pandas as pd
+import statsmodels.api as sm
+
+source = 'https://raw.githubusercontent.com/cbrownley/foundations-for-analytics-with-python/master/statistics/winequality-both.csv'
+df = pd.read_csv(source)
+
+# 利用除了 type、quality 之外的欄位（X） 對 quality 欄位（y） 進行迴歸分析
+
+# 資料的後 10 筆資料當成「測試資料」
+test = df[-10:]
+testy = test['quality']
+testX = sm.add_constant(test[test.columns.difference(['type','quality'])])
+
+# 其餘資料作為「訓練資料」
+train = df[:-10]
+y = train['quality']
+X = sm.add_constant(train[train.columns.difference(['type','quality'])])
+
+# A 創建OLS線性迴歸模型並擬合
+model = sm.OLS(y,X).fit() 
+
+# B 輸出迴歸結果
+print(model.summary())
+
+# C 對測試資料進行預測，輸出預測結果
+print(model.predict(testX)) 
