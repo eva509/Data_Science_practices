@@ -1,0 +1,54 @@
+import pandas as pd
+import statsmodels.api as sm
+
+# 載入資料
+source = 'https://raw.githubusercontent.com/MachineLearningLiuMing/scikit-learn-primer-guide/master/Data.csv'
+df = pd.read_csv(source)
+
+# 資料前處理
+# -1 檢查是否有缺失值(Age, Salary)
+missing = df.isnull().sum()
+# -2 以平均數填補缺失值
+df['Age'].fillna(df['Age'].mean(),inplace=True)
+df['Salary'].fillna(df['Salary'].mean(),inplace=True)
+# -3 將類別欄位轉為數值欄位(Country,Purchased)，並整理成data
+data = pd.get_dummies(df,columns=['Country'],dtype=int)
+data['Purchased'] = data['Purchased'].replace({'Yes':1,'No':0})
+
+# 切分訓練集和測試集 # 分成前 7 筆的訓練資料與後 3 筆的測試資料
+train = data[:7]
+x_train = train.drop(columns='Salary')
+y_train = train['Salary']
+
+test = data[7:]
+x_test = test.drop(columns='Salary')
+y_test = test['Salary']
+
+
+# 線性迴歸模型
+from sklearn.linear_model import LinearRegression
+model = LinearRegression()
+model.fit(x_train, y_train)
+y_pred_reg = model.predict(x_test)
+print(y_pred_reg)
+
+# 決策樹迴歸模型
+from sklearn.tree import DecisionTreeRegressor
+reg_model = DecisionTreeRegressor()
+reg_model.fit(x_train, y_train)
+y_pred_reg = reg_model.predict(x_test)
+print(y_pred_reg)
+
+# 隨機森林迴歸模型
+from sklearn.ensemble import RandomForestRegressor
+reg_model = RandomForestRegressor()
+reg_model.fit(x_train, y_train)
+y_pred_reg = reg_model.predict(x_test)
+print(y_pred_reg)
+
+# SVM迴歸模型
+from sklearn.svm import SVR
+model = SVR()
+model.fit(x_train, y_train)
+y_pred_reg = model.predict(x_test)
+print(y_pred_reg)
