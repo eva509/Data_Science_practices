@@ -1,0 +1,27 @@
+import numpy as np
+import pandas as pd
+from sklearn.cluster import KMeans
+
+# 載入資料
+X = np.array([[1, 2], [1, 4], [1, 0],
+              [4, 2], [4, 4], [4, 0]])
+
+print('===== 原始資料 =====')
+df = pd.DataFrame(X)
+
+# 依序測試k=3、4、5
+values = [3,4,5]
+for k in values:
+
+    # 使用KMeams模型
+    model = KMeans(n_clusters=k)
+    # 擬合
+    model.fit(X)
+    # 指出每個點的標籤
+    labels = model.labels_
+    print('當k=',k,'時，分群結果為',labels)
+
+
+''' 
+結論：k=3時，樣本分群較為理想、平均
+'''
