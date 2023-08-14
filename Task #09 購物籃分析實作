@@ -1,0 +1,29 @@
+import pandas as pd
+from mlxtend.preprocessing import TransactionEncoder
+from mlxtend.frequent_patterns import apriori
+from mlxtend.frequent_patterns import association_rules
+
+# 資料集
+dataset = [
+  ['Milk', 'Onion', 'Nutmeg', 'Kidney' 'Beans', 'Eggs', 'Yogurt'],
+  ['Dill', 'Onion', 'Nutmeg', 'Kidney' 'Beans', 'Eggs', 'Yogurt'],
+  ['Milk', 'Apple', 'Kidney' 'Beans', 'Eggs'],
+  ['Milk', 'Unicorn', 'Corn', 'Kidney' 'Beans', 'Yogurt'],
+  ['Corn', 'Onion', 'Onion', 'Kidney' 'Beans', 'Ice cream', 'Eggs'],]
+
+# 使用 mlxtend 中 TransactionEncoder 將交易數據集轉換成布爾值矩陣(boolean array)
+# fit()訓練、transform()轉換成one-hot 編碼
+te = TransactionEncoder()
+te_ary = te.fit(dataset).transform(dataset)
+
+# 創建DataFrame，以項目名稱對應布林值
+df = pd.DataFrame(te_ary, columns=te.columns_)
+print(df)
+
+# 使用Apriori 分析找出頻繁項集：最小支持度50％、以項目名稱呈現
+frequent_itemsets = apriori(df, min_support=0.5, use_colnames=True)
+print(frequent_itemsets)
+
+# 使用 Association Rules 算法分析：基於頻繁項目集，找出Confidence大於50%的關聯規則
+rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=0.5)
+print(rules[['antecedents', 'consequents', 'support', 'confidence']])
